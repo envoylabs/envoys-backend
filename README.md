@@ -4,10 +4,13 @@
 
 ```shell
 $ npm install serverless -g
+$ npm install serverless-offline --save-dev
 $ lein deps
 ```
 
 # Run locally (TODO)
+
+I need to work out if it's possible to fix this, or provide an alternate path to local development.
 
 ```shell
 $ sls offline start
@@ -24,11 +27,11 @@ $ serverless deploy
 # Redeploy Function
 
 ```
-$ serverless deploy function -f echo
+$ serverless deploy function -f index
 ```
 
 # Invoke
 
 ```shell
-$ curl -X POST <url> -H 'Content-Type: application/json' -d '{"body": "Hi"}'
+$ curl -X GET <url> -H 'Content-Type: application/json'
 ```
