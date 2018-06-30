@@ -1,0 +1,17 @@
+service: envoys-backend
+
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: nodejs8.10
+
+functions:
+  index:
+    cljs: envoys-backend.core/index
+    events:
+      - http:
+          path: /
+          method: get
+
+plugins:
+  - serverless-cljs-plugin
