@@ -7,6 +7,10 @@ pom.xml
 .lein*
 /node_modules
 admin.env
+/resources
+
+.nrepl-port
+figwheel_server.log
 
 # ignore serverless stuff
 .env

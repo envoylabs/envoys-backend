@@ -16,3 +16,8 @@ functions:
 plugins:
   - serverless-cljs-plugin
   - serverless-offline
+
+custom:
+  cljsCompiler:
+    lumo:
+      index: true
