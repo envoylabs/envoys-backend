@@ -8,7 +8,8 @@ pom.xml
 /node_modules
 admin.env
 /resources
-
+.DS_Store
+.rebel_readline_history
 .nrepl-port
 figwheel_server.log
 

@@ -10,27 +10,38 @@ $ lein deps
 
 # REPL
 
-Assuming you have a working repl - [instructions here](https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl), and the following in `init.el`:
+Make sure you have something reasonable in your `~/.lein/profiles.clj`:
 
 ```
-(setq cider-cljs-lein-repl
-      "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
+{:repl {:dependencies [[org.clojure/tools.nrepl "0.2.12"]]
+        :plugins [[cider/cider-nrepl "0.17.0"]]}}
 ```
 
-Assuming you have nashorn in your local dev dependencies:
+    lein figwheel server
+
+In a new prompt:
+
+    node "resources/local/js/localserver.js"
+
+# nREPL and Emacs
+
+To start a repl:
+
+    lein repl
+
+In Emacs, `M-x cider-connect`, then:
 
 ```
-lein repl
-...
-user=> (require '[cljs.repl.nashorn :as nashorn])
-nil
-user=> (cider.piggieback/cljs-repl (nashorn/repl-env))
-To quit, type: :cljs/quit
-nil
-cljs.user=> 
+    user=> (use 'figwheel-sidecar.repl-api)
+    ...
+    user=> (figwheel-sidecar.repl-api/start-figwheel!)
+    ...
+    user=> (cljs-repl)
+    ...
+    cljs.user=>
 ```
+
+Then interact with the repl normally.
 
 # Run locally (TODO)
 

@@ -40,3 +40,6 @@
              clj->js
              (.stringify js/JSON))})
 
+
+(defn adder [a b]
+  (+ a b))

@@ -6,8 +6,12 @@
 
   :profiles {:dev {:dependencies [[cider/piggieback "0.3.6"]
                                   [org.clojure/tools.nrepl "0.2.13"]
-                                  [figwheel-sidecar "0.5.16"]]
-                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
+                                  [figwheel-sidecar "0.5.16"]
+                                  [cider/cider-nrepl "0.17.0"]]
+                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
+                   :figwheel {:nrepl-port 7888 ;; Start an nREPL server into the running figwheel process
+                              :nrepl-middleware ["cider.nrepl/cider-middleware"
+                                                 "refactor-nrepl.middleware/wrap-refactor"]}}}
 
   :plugins [[lein-npm "0.6.2"]
             [lein-figwheel "0.5.16"]
@@ -27,10 +31,11 @@
                            :optimizations :simple}}}
 
   :cljsbuild {:builds
-              [{:id "dev"
-                :source-paths ["src"]
+              [{:id "server"
+                :source-paths ["env/dev" "src"]
                 :figwheel true
-                :compiler {:main envoys-backend.core
-                           :asset-path "js/out"
-                           :output-to "resources/public/js/envoys_backend.js"
-                           :output-dir "resources/public/js/out" }}]})
+                :compiler {:main server
+                           :target :nodejs
+                           :source-map true
+                           :output-to "resources/local/js/localserver.js"
+                           :output-dir "resources/local/js" }}]})
