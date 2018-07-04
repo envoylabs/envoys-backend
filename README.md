@@ -5,6 +5,7 @@
 ```shell
 $ npm install serverless -g
 $ npm install serverless-offline --save-dev
+$ npm install ws
 $ lein deps
 ```
 
@@ -37,7 +38,17 @@ In Emacs, `M-x cider-connect`, then:
     user=> (figwheel-sidecar.repl-api/start-figwheel!)
     ...
     user=> (cljs-repl)
-    ...
+```
+
+The prompt will hang. However, that's only because you need to start the server. Luckily for you, it was just built!
+
+To start it:
+
+    node "resources/local/js/localserver.js"
+
+You should then see in your repl that the prompt will change:
+
+```
     cljs.user=>
 ```
 

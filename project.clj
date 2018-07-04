@@ -9,9 +9,7 @@
                                   [figwheel-sidecar "0.5.16"]
                                   [cider/cider-nrepl "0.17.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
-                   :figwheel {:nrepl-port 7888 ;; Start an nREPL server into the running figwheel process
-                              :nrepl-middleware ["cider.nrepl/cider-middleware"
-                                                 "refactor-nrepl.middleware/wrap-refactor"]}}}
+                   :figwheel {:nrepl-middleware ["cider.nrepl/cider-middleware"]}}}
 
   :plugins [[lein-npm "0.6.2"]
             [lein-figwheel "0.5.16"]
