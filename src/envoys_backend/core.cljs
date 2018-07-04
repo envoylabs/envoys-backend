@@ -41,5 +41,8 @@
              (.stringify js/JSON))})
 
 
+(deflambda lambda-adder [[a b] ctx]
+  (+ a b))
+
 (defn adder [a b]
   (+ a b))
