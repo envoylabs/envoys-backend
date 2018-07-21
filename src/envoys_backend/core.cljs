@@ -7,14 +7,14 @@
   "Wrap the passed-in body map with the other parts of the json map
    that we want to return."
   (let [context {:status status
-                 :headers {:content-type "application/json"}}])
-  (-> map
-      (merge context)))
+                 :headers {:content-type "application/json"}}]
+    (-> map
+        (merge context))))
 
 (defn wrap-common [map]
   "UI components common to all endpoints"
   (-> map
-      (marge {:title "Envoys | Software Engineering"})))
+      (merge {:title "Envoys | Software Engineering"})))
 
 (def index-data
   {:hero-text "A functional-first engineering collective with a focus on doing things right, first time."
@@ -50,10 +50,10 @@
    :body-text "Lorem Ipsum"})
 
 (defn body->layout-as-json [data-map]
-  (-> data-map
-      wrap-common
-      clj->js
-      (.stringify js/JSON)))
+  (let [js-map (-> data-map
+                   wrap-common
+                   clj->js)]
+    (.stringify js/JSON js-map)))
 
 (defgateway index [event ctx]
   (let [body {:body (body->layout-as-json index-data)}]

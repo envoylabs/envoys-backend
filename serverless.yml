@@ -17,11 +17,11 @@ functions:
     events:
       - http:
           path: /about
-	  method: get
+          method: get
 
 plugins:
   - serverless-cljs-plugin
-  - serverless-offline
+#  - serverless-offline
 
 custom:
   cljsCompiler:
