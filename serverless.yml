@@ -12,6 +12,12 @@ functions:
       - http:
           path: /
           method: get
+  about:
+    cljs: envoys-backend.core/about
+    events:
+      - http:
+          path: /about
+	  method: get
 
 plugins:
   - serverless-cljs-plugin
