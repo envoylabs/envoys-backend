@@ -62,6 +62,16 @@ I need to work out if it's possible to fix this, or provide an alternate path to
 $ sls offline start
 ```
 
+With Serverless, you can invoke functions and pass stub data from a file. The [docs are here](https://serverless.com/framework/docs/providers/aws/cli-reference/invoke/).
+
+Probably, you want to put some data in a directory and then invoke locally:
+
+```
+serverless invoke --function functionName --stage dev --region eu-west-1 --path data/data.json
+```
+
+The `data` directory is ignored by default.
+
 # Deploy
 
 Make sure your AWS keys are available in your PATH, then:

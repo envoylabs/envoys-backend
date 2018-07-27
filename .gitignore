@@ -12,6 +12,7 @@ admin.env
 .rebel_readline_history
 .nrepl-port
 figwheel_server.log
+/data
 
 # ignore serverless stuff
 .env
