@@ -18,6 +18,18 @@ functions:
       - http:
           path: /about
           method: get
+  blog:
+    cljs: envoys-backend.core/blog
+    events:
+      - http:
+          path: /blog
+          method: get
+  contact:
+    cljs: envoys-backend.core/contact
+    events:
+      - http:
+          path: /contact
+          method: get
 
 plugins:
   - serverless-cljs-plugin

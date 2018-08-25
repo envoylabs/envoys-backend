@@ -16,6 +16,7 @@
   (-> map
       (merge {:title "Envoys | Software Engineering"})))
 
+;; refactor this into defmulti when we move to database
 (def index-data
   {:hero-text "A functional-first engineering collective that does things right, first time."})
 
@@ -34,10 +35,20 @@
                    clj->js)]
     (.stringify js/JSON js-map)))
 
+;; any fatal errors will be caught by Lambda invocation
+;; and wrapped, so we only return 200
 (defgateway index [event ctx]
   (let [body {:body (body->layout-as-json index-data)}]
     (wrap-layout body 200)))
 
 (defgateway about [event ctx]
   (let [body {:body (body->layout-as-json about-data)}]
+    (wrap-layout body 200)))
+
+(defgateway blog [event ctx]
+  (let [body {:body (body->layout-as-json blog-data)}]
+    (wrap-layout body 200)))
+
+(defgateway contact [event ctx]
+  (let [body {:body (body->layout-as-json contact-data)}]
     (wrap-layout body 200)))
