@@ -12,24 +12,28 @@ functions:
       - http:
           path: /
           method: get
+          cors: true
   about:
     cljs: envoys-backend.core/about
     events:
       - http:
           path: /about
           method: get
+          cors: true
   blog:
     cljs: envoys-backend.core/blog
     events:
       - http:
           path: /blog
           method: get
+          cors: true
   contact:
     cljs: envoys-backend.core/contact
     events:
       - http:
           path: /contact
           method: get
+          cors: true
 
 plugins:
   - serverless-cljs-plugin

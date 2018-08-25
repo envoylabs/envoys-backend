@@ -7,7 +7,9 @@
   "Wrap the passed-in body map with the other parts of the json map
    that we want to return."
   (let [context {:status status
-                 :headers {:content-type "application/json"}}]
+                 :headers {:content-type "application/json"
+                           :access-control-allow-origin "*"
+                           :access-control-allow-credentials "true"}}]
     (-> map
         (merge context))))
 
