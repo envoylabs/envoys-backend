@@ -39,7 +39,7 @@
 
 (defn body->layout-as-json [data-map]
   (let [wrapped-map (-> data-map
-                          wrap-common)]
+                        wrap-common)]
     (clj->json wrapped-map)))
 
 (defn get-env []
@@ -49,7 +49,7 @@
 
 (defn get-sns-topic-from-env []
   (-> (get-env)
-      (get "SNS_TOPIC")))
+      (aget "SNS_TOPIC")))
 
 (defn get-sns-client []
   (aws/SNS.))
