@@ -55,8 +55,8 @@
   (aws/SNS.))
 
 (defn event->sns-event [event]
-  (let [sms-msg-generator #({:default %
-                             :sms %})]
+  (let [sms-msg-generator (fn [e] {:default e
+                                  :sms e})]
     (-> event
         :body
         sms-msg-generator
