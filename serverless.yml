@@ -34,6 +34,13 @@ functions:
           path: /contact
           method: get
           cors: true
+  contact-form:
+    cljs: envoys-backend.core/contact-form
+    events:
+      - http:
+          path: /contact/create
+          method: post
+          cors: true
 
 plugins:
   - serverless-cljs-plugin

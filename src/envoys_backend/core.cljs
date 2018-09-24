@@ -2,7 +2,8 @@
   (:require [cljs-lambda.macros :refer-macros [deflambda defgateway]]
             [cljs-lambda.local :as local]
             [cljs-lambda.aws.event :as awse]
-            ["aws-sdk" :as aws]))
+            ["aws-sdk" :as aws]
+            ["util" :as util]))
 
 (defn wrap-layout [map status]
   "Wrap the passed-in body map with the other parts of the json map
@@ -48,29 +49,38 @@
       js->clj))
 
 (defn get-sns-topic-from-env []
-  (-> (get-env)
-      (aget "SNS_TOPIC")))
+  (let [sns-topic (-> (get-env)
+                      (aget "SNS_TOPIC"))]
+    sns-topic))
 
 (defn get-sns-client []
   (aws/SNS.))
 
 (defn event->sns-event [event]
   (let [sms-msg-generator (fn [e] {:default e
-                                  :sms e})]
+                                   :sms e})]
     (-> event
         :body
         sms-msg-generator
         clj->json)))
 
-(defn send-to-sns [sns-client topic subject msgs]
-  "Send message to an SNS topic"
-  (let [publish-fn (fn [msg topic]
-                     (.publish sns-client {:Message msg
-                                           :MessageAttributes {:DataType "String"}
-                                           :MessageStructure "json"
-                                           :TopicArn topic
-                                           :Subject subject}))]
-    (map publish-fn msgs)))
+(defn send-to-sns [sns-client topic subject msg]
+  "Send message to an SNS topic
+   TODO: something more sensible with callback than just logging
+   e.g. wrap in promise and resolve below"
+  (let [publish-fn (fn [m]
+                     (let [params (-> {:Message m
+                                       :MessageStructure "json"
+                                       :TopicArn topic
+                                       :Subject subject}
+                                      clj->js)
+                           response (.publish sns-client
+                                              params
+                                              (fn [err data]
+                                                (str "err: " err "\n"
+                                                     "data: " data)))]
+                       response))]
+    (publish-fn msg)))
 
 ;; any fatal errors will be caught by Lambda invocation
 ;; and wrapped by API Gateway, so we only return 200
@@ -93,9 +103,10 @@
 (defgateway contact-form [event ctx]
   (let [topic (get-sns-topic-from-env)
         sns-client (get-sns-client)
-        sns-messages (into [] (event->sns-event event))
-        response (send-to-sns sns-client topic "Contact Form" sns-messages)
-        body {:body {:msg "success"}} ;; todo - reduce responses and filter
+        sns-message (event->sns-event event)
+        response (send-to-sns sns-client topic "Contact Form" sns-message)
+        body {:body {:msg (-> (js/Promise.resolve response)
+                              (.then identity))}} ;; todo - reduce responses and filter
         status 200]
     (wrap-layout body status)))
 
