@@ -19,7 +19,8 @@
   ;;:source-paths ["src"]
 
   :npm {:dependencies [[serverless-cljs-plugin "0.1.2"]
-                       [aws-sdk "2.316.0"]]}
+                       [aws-sdk "2.316.0"]
+                       [lodash "4.17.5"]]}
 
   :cljs-lambda {:compiler
                 {:inputs  ["src"]
