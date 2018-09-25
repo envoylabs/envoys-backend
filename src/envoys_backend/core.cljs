@@ -77,13 +77,14 @@
                            response (.publish sns-client
                                               params
                                               (fn [err data]
-                                                (str "err: " err "\n"
-                                                     "data: " data)))]
+                                                {:err err
+                                                 :data data}))]
                        response))]
     (publish-fn msg)))
 
 ;; any fatal errors will be caught by Lambda invocation
 ;; and wrapped by API Gateway, so we only return 200
+;; on contact we DLQ on errors via AWS
 (defgateway index [event ctx]
   (let [body {:body (body->layout-as-json index-data)}]
     (wrap-layout body 200)))
@@ -105,8 +106,7 @@
         sns-client (get-sns-client)
         sns-message (event->sns-event event)
         response (send-to-sns sns-client topic "Contact Form" sns-message)
-        body {:body {:msg (-> (js/Promise.resolve response)
-                              (.then identity))}} ;; todo - reduce responses and filter
+        body {:body {:msg "ok"}} ;; todo - reduce responses and filter
         status 200]
     (wrap-layout body status)))
 
