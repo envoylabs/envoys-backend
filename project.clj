@@ -2,7 +2,8 @@
   :dependencies [[org.clojure/clojure       "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [io.nervous/cljs-lambda    "0.3.5"]
-                 [org.clojure/core.async "0.4.474"]]
+                 [org.clojure/core.async "0.4.474"]
+                 [funcool/promesa "1.9.0"]]
 
   :profiles {:dev {:dependencies [[cider/piggieback "0.3.6"]
                                   [org.clojure/tools.nrepl "0.2.13"]

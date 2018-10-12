@@ -1,23 +1,24 @@
 (ns envoys-backend.core
-  (:require [cljs-lambda.macros :refer-macros [deflambda defgateway]]
+  (:require [promesa.core :as p]
+            [cljs-lambda.macros :refer-macros [deflambda defgateway]]
             [cljs-lambda.local :as local]
             [cljs-lambda.aws.event :as awse]
             ["aws-sdk" :as aws]
             ["util" :as util]))
 
-(defn wrap-layout [map status]
+(defn wrap-layout [hmap status]
   "Wrap the passed-in body map with the other parts of the json map
    that we want to return."
   (let [context {:status status
                  :headers {:content-type "application/json"
                            :access-control-allow-origin "*"
                            :access-control-allow-credentials "true"}}]
-    (-> map
+    (-> hmap
         (merge context))))
 
-(defn wrap-common [map]
+(defn wrap-common [hmap]
   "UI components common to all endpoints"
-  (-> map
+  (-> hmap
       (merge {:title "Envoys | Software Engineering"})))
 
 ;; refactor this into defmulti when we move to database
@@ -33,8 +34,8 @@
 (def contact-data
   {:hero-text "For general queries, drop us a line at hello@envoys.io. To discuss a project with our CTO, email alex@lynh.am"})
 
-(defn clj->json [map]
-  (let [js-map (-> map
+(defn clj->json [hmap]
+  (let [js-map (-> hmap
                    clj->js)]
     (.stringify js/JSON js-map)))
 
@@ -43,11 +44,13 @@
                         wrap-common)]
     (clj->json wrapped-map)))
 
+;; ENV
 (defn get-env []
   "Returns current env vars as a Clojure map."
   (-> (.-env js/process)
       js->clj))
 
+;; SNS utils
 (defn get-sns-topic-from-env []
   (let [sns-topic (-> (get-env)
                       (aget "SNS_TOPIC"))]
@@ -64,23 +67,19 @@
         sms-msg-generator
         clj->json)))
 
-(defn send-to-sns [sns-client topic subject msg]
+(defn get-sns-params [topic subject msg]
+  (-> {:Message msg
+       :MessageStructure "json"
+       :TopicArn topic
+       :Subject subject}
+      clj->js))
+
+(defn get-sns-promise [sns-client params]
   "Send message to an SNS topic
-   TODO: something more sensible with callback than just logging
-   e.g. wrap in promise and resolve below"
-  (let [publish-fn (fn [m]
-                     (let [params (-> {:Message m
-                                       :MessageStructure "json"
-                                       :TopicArn topic
-                                       :Subject subject}
-                                      clj->js)
-                           response (.publish sns-client
-                                              params
-                                              (fn [err data]
-                                                {:err err
-                                                 :data data}))]
-                       response))]
-    (publish-fn msg)))
+   Returns a channel"
+  (let [promise (.promise (.publish sns-client
+                                    params))]
+    promise))
 
 ;; any fatal errors will be caught by Lambda invocation
 ;; and wrapped by API Gateway, so we only return 200
@@ -105,8 +104,10 @@
   (let [topic (get-sns-topic-from-env)
         sns-client (get-sns-client)
         sns-message (event->sns-event event)
-        response (send-to-sns sns-client topic "Contact Form" sns-message)
-        body {:body {:msg "ok"}} ;; todo - reduce responses and filter
-        status 200]
-    (wrap-layout body status)))
+        params (get-sns-params topic "Contact Form" sns-message)
+        sns-promise (get-sns-promise sns-client params)]
+    (-> sns-promise
+        (p/chain js->clj
+                 #(wrap-layout {:body {:msg %}}
+                               200)))))
 
